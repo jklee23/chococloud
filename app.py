@@ -1,4 +1,5 @@
-# app.py — 최신버전 Streamlit 호환 (st.query_params 사용)
+# app.py — 최신 Streamlit + 프레젠테이션 모드 토글 통합본
+from streamlit.components.v1 import html  # ✅ 전체화면 JS 버튼용
 import random, re
 from collections import Counter
 from pathlib import Path
@@ -30,6 +31,77 @@ except:
 DEBUG = st.sidebar.checkbox("디버그 모드", value=False)
 
 # =========================
+# 🎬 프레젠테이션 모드 (UI 최소화 + 전체화면)
+# =========================
+def apply_minimal_css(hide_sidebar: bool = False):
+    """
+    Streamlit 기본 UI를 최대한 숨기는 CSS 주입.
+    """
+    css = """
+    <style>
+      header, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] {
+        display: none !important;
+      }
+      .block-container {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+      }
+    </style>
+    """
+    if hide_sidebar:
+        css += """
+        <style>
+          [data-testid="stSidebar"], section[data-testid="stSidebar"] {
+            display: none !important;
+          }
+        </style>
+        """
+    st.markdown(css, unsafe_allow_html=True)
+
+def presentation_controls(default_minimal=False):
+    """
+    상단에 프레젠테이션 전용 컨트롤 표시:
+    - UI 최소화 토글
+    - 사이드바 숨김 토글
+    - 전체화면/종료 버튼(JS)
+    """
+    with st.container():
+        left, mid, right = st.columns([0.5, 0.5, 1.5])
+        with left:
+            minimal = st.checkbox("🎬 프레젠테이션 모드", value=default_minimal,
+                                  help="헤더/푸터/툴바/여백을 숨깁니다.")
+        with mid:
+            hide_sb = st.checkbox("사이드바 숨기기", value=False,
+                                  help="체크 시 사이드바도 숨겨집니다. 해제는 새로고침 또는 주소창 view로 재진입.")
+        with right:
+            html(
+                """
+                <script>
+                function goFS(){
+                  const el = document.documentElement;
+                  (el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen).call(el);
+                }
+                function exitFS(){
+                  (document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen).call(document);
+                }
+                </script>
+                <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;">
+                  <button onclick="goFS()" style="padding:6px 10px;border-radius:8px;cursor:pointer;">⛶ 전체화면</button>
+                  <button onclick="exitFS()" style="padding:6px 10px;border-radius:8px;cursor:pointer;">🗗 전체화면 해제</button>
+                </div>
+                """,
+                height=40
+            )
+
+    if minimal:
+        apply_minimal_css(hide_sidebar=hide_sb)
+
+# ✅ 컨트롤 표시 (레이아웃 렌더 전에 호출)
+presentation_controls(default_minimal=False)
+
+# =========================
 # 🎨 팔레트 & 폰트
 # =========================
 MY_COLORS = ["#FF7AB6", "#FFA442", "#FFF755", "#96FF73", "#59D0FF", "#CF9BFF", "#65FFEB"]
@@ -39,12 +111,12 @@ def random_color_func(*args, **kwargs):
 def pick_font():
     """배포/로컬 모두 고려한 한글 폰트 후보."""
     candidates = [
-        "fonts/HakgyoansimByeolbichhaneul.otf",
-        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",          # Linux 컨테이너(배포)
+        "fonts/HakgyoansimByeolbichhaneul.otf",                    # 프로젝트 동봉 (파일명 단순화 권장)
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",         # Linux 컨테이너(배포)
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        r"C:\Windows\Fonts\malgun.ttf",                             # Windows
+        r"C:\Windows\Fonts\malgun.ttf",                            # Windows
         r"C:\Windows\Fonts\NanumGothic.ttf",
-        "fonts/NotoSansKR-Regular.otf",                             # 프로젝트 동봉
+        "fonts/NotoSansKR-Regular.otf",                            # 프로젝트 동봉
         "fonts/NotoSansCJKkr-Regular.otf",
         "fonts/NanumGothic.ttf",
     ]
@@ -69,7 +141,11 @@ def get_gspread_client():
     except Exception:
         secrets = None
     if secrets:
-        credentials = ServiceAccountCredentials.from_json_keyfile_dict(dict(secrets), scopes=scope)
+        # 🔧 private_key 개행 복원 (\\n → \n) — Secrets 입력 방식에 상관없이 안전
+        fixed = dict(secrets)
+        if "private_key" in fixed and isinstance(fixed["private_key"], str):
+            fixed["private_key"] = fixed["private_key"].replace("\\n", "\n").strip()
+        credentials = ServiceAccountCredentials.from_json_keyfile_dict(fixed, scopes=scope)
         return gspread.authorize(credentials)
 
     # 2) 로컬: service_account.json 파일
