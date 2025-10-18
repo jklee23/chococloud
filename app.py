@@ -34,69 +34,63 @@ DEBUG = st.sidebar.checkbox("디버그 모드", value=False)
 # 🎬 프레젠테이션 모드 (UI 최소화 + 전체화면)
 # =========================
 def apply_minimal_css(hide_sidebar: bool = False):
-    """
-    Streamlit 기본 UI를 최대한 숨기는 CSS 주입.
-    """
     css = """
     <style>
-      header, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] {
-        display: none !important;
-      }
-      .block-container {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-      }
+      header, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] { display: none !important; }
+      .block-container { padding-top: 0 !important; padding-bottom: 0 !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
     </style>
     """
     if hide_sidebar:
         css += """
         <style>
-          [data-testid="stSidebar"], section[data-testid="stSidebar"] {
-            display: none !important;
-          }
+          [data-testid="stSidebar"], section[data-testid="stSidebar"] { display: none !important; }
         </style>
         """
     st.markdown(css, unsafe_allow_html=True)
 
+def apply_full_window_css():
+    """
+    Streamlit 뷰 컨테이너를 화면에 고정해 '창 채우기' 효과를 만듦.
+    (진짜 브라우저 전체화면은 아니지만, 시각적으로 동일하게 느껴짐)
+    """
+    st.markdown("""
+    <style>
+      html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
+      /* 페이지 스크롤 제거 및 컨테이너를 창 전체로 확대 */
+      [data-testid="stAppViewContainer"] > .main {
+        padding: 0 !important;
+      }
+      [data-testid="stAppViewContainer"] {
+        position: fixed !important;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100vw; height: 100vh;
+        background: #000; /* 가장자리 빛샘 방지 */
+        overflow: hidden !important;
+      }
+      .block-container { margin: 0 !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
 def presentation_controls(default_minimal=False):
-    """
-    상단에 프레젠테이션 전용 컨트롤 표시:
-    - UI 최소화 토글
-    - 사이드바 숨김 토글
-    - 전체화면/종료 버튼(JS)
-    """
     with st.container():
-        left, mid, right = st.columns([0.5, 0.5, 1.5])
-        with left:
+        c1, c2, c3 = st.columns([0.7, 0.9, 1.4])
+        with c1:
             minimal = st.checkbox("🎬 프레젠테이션 모드", value=default_minimal,
                                   help="헤더/푸터/툴바/여백을 숨깁니다.")
-        with mid:
+        with c2:
             hide_sb = st.checkbox("사이드바 숨기기", value=False,
-                                  help="체크 시 사이드바도 숨겨집니다. 해제는 새로고침 또는 주소창 view로 재진입.")
-        with right:
-            html(
-                """
-                <script>
-                function goFS(){
-                  const el = document.documentElement;
-                  (el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen).call(el);
-                }
-                function exitFS(){
-                  (document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen).call(document);
-                }
-                </script>
-                <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;">
-                  <button onclick="goFS()" style="padding:6px 10px;border-radius:8px;cursor:pointer;">⛶ 전체화면</button>
-                  <button onclick="exitFS()" style="padding:6px 10px;border-radius:8px;cursor:pointer;">🗗 전체화면 해제</button>
-                </div>
-                """,
-                height=40
-            )
+                                  help="체크 시 사이드바도 숨깁니다. 해제는 새로고침 또는 주소창 view로 재진입.")
+        with c3:
+            fullwin = st.checkbox("⛶ 창 채우기(가짜 전체화면)", value=False,
+                                  help="브라우저 전체화면 대신 앱이 창을 가득 채우도록 CSS로 고정합니다.")
+
+        st.caption("💡 진짜 전체화면은 단축키를 쓰세요 — Windows: F11, macOS: ⌃⌘F")
 
     if minimal:
         apply_minimal_css(hide_sidebar=hide_sb)
+    if fullwin:
+        apply_full_window_css()
+
 
 # ✅ 컨트롤 표시 (레이아웃 렌더 전에 호출)
 presentation_controls(default_minimal=False)
