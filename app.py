@@ -39,6 +39,7 @@ def random_color_func(*args, **kwargs):
 def pick_font():
     """배포/로컬 모두 고려한 한글 폰트 후보."""
     candidates = [
+        "fonts/HakgyoansimByeolbichhaneul.otf",
         "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",          # Linux 컨테이너(배포)
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         r"C:\Windows\Fonts\malgun.ttf",                             # Windows
