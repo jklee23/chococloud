@@ -188,24 +188,26 @@ with col_right:
     countsA = get_phrase_counts(SHEET_A, TARGET_COL)
     render_wordcloud_only(countsA, bg="#7F3100")
 
-# 중앙 흰색 세로선 (절대 위치로 겹치기)
-st.markdown(
-    """
-    <style>
-    .center-divider {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 50%;               /* 정확히 중앙 */
-        width: 8px;              /* 선 두께 */
-        background: #000000;     /* 흰색 */
-        opacity: 0.7;            /* 투명도 */
-        transform: translateX(-50%);
-        z-index: 9999;           /* 맨 위로 */
-        pointer-events: none;    /* 클릭 차단 */
-    }
-    </style>
-    <div class="center-divider"></div>
-    """,
-    unsafe_allow_html=True
-)
+# ─────────────────────────────
+# 중앙 흰색 구분선 — 리렌더링 시에도 깜빡이지 않게 고정
+# ─────────────────────────────
+from streamlit.components.v1 import html
+
+html("""
+<style>
+.center-divider-fixed {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 8px;
+    background: #000000;
+    opacity: 0.8;
+    transform: translateX(-50%);
+    z-index: 9999;
+    pointer-events: none;
+}
+</style>
+<div class="center-divider-fixed"></div>
+""",
+height=0)
