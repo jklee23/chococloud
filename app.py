@@ -193,7 +193,7 @@ with col_mid:
         <div style="
             width:8px;
             height:100vh;
-            background:#fffff;
+            background:#fff;
             opacity:0.6;
             margin:0 auto;">
         </div>
