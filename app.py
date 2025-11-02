@@ -174,34 +174,38 @@ def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
     ax.axis("off")
     st.pyplot(fig, use_container_width=True)
 
-
 # ─────────────────────────────
-# 레이아웃: 좌(B) | 중앙 구분선 | 우(A)
+# 레이아웃: 좌(B) | 중앙 흰색 구분선 오버레이 | 우(A)
 # ─────────────────────────────
-# 가로비율 1:1 유지, 가운데는 아주 얇은 컬럼을 선으로 사용
-col_left, col_mid, col_right = st.columns([1, 0.02, 1], gap="small")
-
+# 두 컬럼은 완전히 같은 폭(1:1)
+col_left, col_right = st.columns(2, gap="small")
 
 with col_left:
     countsB = get_phrase_counts(SHEET_B, TARGET_COL)
     render_wordcloud_only(countsB, bg="#7F3100")
 
-with col_mid:
-    # 가운데 검은 세로선 (2px, 반투명). viewport 높이만큼 표시
-    st.markdown(
-        """
-        <div style="
-            width:8px;
-            height:100vh;
-            background:#fff;
-            opacity:0.6;
-            margin:0 auto;">
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
 with col_right:
     countsA = get_phrase_counts(SHEET_A, TARGET_COL)
     render_wordcloud_only(countsA, bg="#7F3100")
 
+# 중앙 흰색 세로선 (절대 위치로 겹치기)
+st.markdown(
+    """
+    <style>
+    .center-divider {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 50%;               /* 정확히 중앙 */
+        width: 8px;              /* 선 두께 */
+        background: #ffffff;     /* 흰색 */
+        opacity: 0.7;            /* 투명도 */
+        transform: translateX(-50%);
+        z-index: 9999;           /* 맨 위로 */
+        pointer-events: none;    /* 클릭 차단 */
+    }
+    </style>
+    <div class="center-divider"></div>
+    """,
+    unsafe_allow_html=True
+)
