@@ -189,7 +189,7 @@ with col_right:
     render_wordcloud_only(countsA, bg="#7F3100")
 
 # ─────────────────────────────
-# 중앙 흰색 구분선 — 리렌더링 시에도 깜빡이지 않게 고정
+# 중앙 흰색 구분선 — 리렌더링에도 고정 유지
 # ─────────────────────────────
 from streamlit.components.v1 import html
 
@@ -200,12 +200,12 @@ html("""
     top: 0;
     bottom: 0;
     left: 50%;
-    width: 8px;
-    background: #000000;
-    opacity: 0.8;
+    width: 2px;
+    background: #ffffff;  /* 선 색 */
+    opacity: 0.8;         /* 투명도 */
     transform: translateX(-50%);
     z-index: 9999;
-    pointer-events: none;
+    pointer-events: none; /* 클릭 차단 */
 }
 </style>
 <div class="center-divider-fixed"></div>
