@@ -179,7 +179,8 @@ def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
 # 레이아웃: 좌(B) | 중앙 구분선 | 우(A)
 # ─────────────────────────────
 # 가로비율 1:1 유지, 가운데는 아주 얇은 컬럼을 선으로 사용
-col_left, col_mid, col_right = st.columns([1, 0.02, 1], gap="none")
+col_left, col_mid, col_right = st.columns([1, 0.02, 1], gap="small")
+
 
 with col_left:
     countsB = get_phrase_counts(SHEET_B, TARGET_COL)
