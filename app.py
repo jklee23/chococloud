@@ -163,13 +163,13 @@ def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
     wc = WordCloud(
         font_path=FONT_PATH,
         background_color=bg,
-        width=900, height=1260,         # ⬅️ 세로 해상도 증가
+        width=900, height=1100,         # ⬅️ 세로 해상도 증가
         color_func=random_color_func,
         min_font_size=5, max_font_size=200,
         prefer_horizontal=0.95
     ).generate_from_frequencies(counts)
 
-    fig, ax = plt.subplots(figsize=(12, 16), facecolor=bg)      # ⬅️ 세로 더 길게
+    fig, ax = plt.subplots(figsize=(10, 12), facecolor=bg)      # ⬅️ 세로 더 길게
     ax.imshow(wc, interpolation="bilinear")
     ax.axis("off")
     st.pyplot(fig, use_container_width=True)
