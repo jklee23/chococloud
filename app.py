@@ -151,12 +151,11 @@ def get_phrase_counts(worksheet_name: str, target_col_name: str = TARGET_COL):
     return Counter(phrase_list)
 
 # ─────────────────────────────
-# 렌더: 워드클라우드(제목/여백 없이)
+# 렌더: 워드클라우드(제목/여백 없이)  ⬅️ 이 함수만 교체
 # ─────────────────────────────
 def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
     if not counts:
-        # 비어있으면 빈 캔버스만 깔아줌
-        fig, ax = plt.subplots(figsize=(12, 9), facecolor=bg)
+        fig, ax = plt.subplots(figsize=(10, 14), facecolor=bg)  # ⬅️ 세로 더 길게
         ax.axis("off")
         st.pyplot(fig, use_container_width=True)
         return
@@ -164,16 +163,17 @@ def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
     wc = WordCloud(
         font_path=FONT_PATH,
         background_color=bg,
-        width=1200, height=700,
+        width=900, height=1260,         # ⬅️ 세로 해상도 증가
         color_func=random_color_func,
         min_font_size=5, max_font_size=200,
         prefer_horizontal=0.95
     ).generate_from_frequencies(counts)
 
-    fig, ax = plt.subplots(figsize=(12, 9), facecolor=bg)
+    fig, ax = plt.subplots(figsize=(10, 14), facecolor=bg)      # ⬅️ 세로 더 길게
     ax.imshow(wc, interpolation="bilinear")
     ax.axis("off")
     st.pyplot(fig, use_container_width=True)
+
 
 # ─────────────────────────────
 # 레이아웃: 좌(B) / 우(A) 연결표시
