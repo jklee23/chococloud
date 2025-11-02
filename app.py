@@ -189,29 +189,22 @@ with col_right:
     render_wordcloud_only(countsA, bg="#7F3100")
 
 # ─────────────────────────────
-# 완전 고정 중앙선 (리렌더링해도 깜빡이지 않음)
+# 중앙 흰색 구분선 (Streamlit Cloud 호환 + 최소 깜빡임)
 # ─────────────────────────────
 st.markdown("""
-<script>
-(function() {
-  // 이미 선이 있으면 중복 생성 방지
-  if (document.getElementById("real-fixed-divider")) return;
-
-  const line = document.createElement("div");
-  line.id = "real-fixed-divider";
-  Object.assign(line.style, {
-    position: "fixed",
-    top: "0",
-    bottom: "0",
-    left: "50%",
-    width: "8px",
-    background: "#000000",
-    opacity: "0.9",
-    transform: "translateX(-50%)",
-    zIndex: "9999999",
-    pointerEvents: "none"
-  });
-  document.body.appendChild(line);
-})();
-</script>
+<style>
+#fixed-divider {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 8px;
+    background: #000000;
+    opacity: 0.9;
+    transform: translateX(-50%);
+    z-index: 999999;
+    pointer-events: none;
+}
+</style>
+<div id="fixed-divider"></div>
 """, unsafe_allow_html=True)
