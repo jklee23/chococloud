@@ -176,13 +176,45 @@ def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
 
 
 # ─────────────────────────────
-# 레이아웃: 좌(B) / 우(A) 연결표시
+# 레이아웃: 좌(B) / 우(A) 연결표시 + 중앙 구분선
 # ─────────────────────────────
-# AFTER(B) 왼쪽, BEFORE(A) 오른쪽 — 배경을 통일해 하나의 화면처럼
-col_left, col_right = st.columns(2, gap="small")
-with col_left:
-    countsB = get_phrase_counts(SHEET_B, TARGET_COL)
-    render_wordcloud_only(countsB, bg="#7F3100")
-with col_right:
-    countsA = get_phrase_counts(SHEET_A, TARGET_COL)
-    render_wordcloud_only(countsA, bg="#7F3100")
+# AFTER(B) 왼쪽, BEFORE(A) 오른쪽 — 배경 통일, 중앙 검은 구분선 추가
+st.markdown("""
+<style>
+.divider-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    background-color: #7F3100;
+    width: 100vw;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+.div-left, .div-right {
+    flex: 1;
+    background-color: #7F3100;
+}
+.div-line {
+    width: 2px;                    /* 선 두께 */
+    background-color: #000000;     /* 검은색 */
+    opacity: 0.6;                  /* 약간 투명 (0~1) */
+}
+</style>
+
+<div class="divider-wrapper">
+  <div class="div-left">""" , unsafe_allow_html=True)
+
+# 왼쪽: AFTER
+countsB = get_phrase_counts(SHEET_B, TARGET_COL)
+render_wordcloud_only(countsB, bg="#7F3100")
+
+st.markdown("""</div><div class="div-line"></div><div class="div-right">""", unsafe_allow_html=True)
+
+# 오른쪽: BEFORE
+countsA = get_phrase_counts(SHEET_A, TARGET_COL)
+render_wordcloud_only(countsA, bg="#7F3100")
+
+st.markdown("</div></div>", unsafe_allow_html=True)
