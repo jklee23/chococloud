@@ -191,7 +191,7 @@ with col_mid:
     st.markdown(
         """
         <div style="
-            width:4px;
+            width:8px;
             height:100vh;
             background:#000;
             opacity:0.6;
