@@ -176,45 +176,31 @@ def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
 
 
 # ─────────────────────────────
-# 레이아웃: 좌(B) / 우(A) 연결표시 + 중앙 구분선
+# 레이아웃: 좌(B) | 중앙 구분선 | 우(A)
 # ─────────────────────────────
-# AFTER(B) 왼쪽, BEFORE(A) 오른쪽 — 배경 통일, 중앙 검은 구분선 추가
-st.markdown("""
-<style>
-.divider-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: stretch;
-    background-color: #7F3100;
-    width: 100vw;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-.div-left, .div-right {
-    flex: 1;
-    background-color: #7F3100;
-}
-.div-line {
-    width: 2px;                    /* 선 두께 */
-    background-color: #000000;     /* 검은색 */
-    opacity: 0.6;                  /* 약간 투명 (0~1) */
-}
-</style>
+# 가로비율 1:1 유지, 가운데는 아주 얇은 컬럼을 선으로 사용
+col_left, col_mid, col_right = st.columns([1, 0.02, 1], gap="none")
 
-<div class="divider-wrapper">
-  <div class="div-left">""" , unsafe_allow_html=True)
+with col_left:
+    countsB = get_phrase_counts(SHEET_B, TARGET_COL)
+    render_wordcloud_only(countsB, bg="#7F3100")
 
-# 왼쪽: AFTER
-countsB = get_phrase_counts(SHEET_B, TARGET_COL)
-render_wordcloud_only(countsB, bg="#7F3100")
+with col_mid:
+    # 가운데 검은 세로선 (2px, 반투명). viewport 높이만큼 표시
+    st.markdown(
+        """
+        <div style="
+            width:2px;
+            height:100vh;
+            background:#000;
+            opacity:0.6;
+            margin:0 auto;">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-st.markdown("""</div><div class="div-line"></div><div class="div-right">""", unsafe_allow_html=True)
+with col_right:
+    countsA = get_phrase_counts(SHEET_A, TARGET_COL)
+    render_wordcloud_only(countsA, bg="#7F3100")
 
-# 오른쪽: BEFORE
-countsA = get_phrase_counts(SHEET_A, TARGET_COL)
-render_wordcloud_only(countsA, bg="#7F3100")
-
-st.markdown("</div></div>", unsafe_allow_html=True)
