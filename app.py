@@ -187,27 +187,24 @@ with col_left:
 with col_right:
     countsA = get_phrase_counts(SHEET_A, TARGET_COL)
     render_wordcloud_only(countsA, bg="#7F3100")
-
 # ─────────────────────────────
-# 중앙 흰색 구분선 — 리렌더링에도 고정 유지
+# 중앙 흰색 구분선 (진짜로 워드클라우드 위에 고정 표시)
 # ─────────────────────────────
-from streamlit.components.v1 import html
-
-html("""
+st.markdown("""
 <style>
-.center-divider-fixed {
-    position: fixed;
+/* 워드클라우드보다 위에 오도록 전역 고정 */
+.center-divider-real {
+    position: fixed !important;
     top: 0;
     bottom: 0;
     left: 50%;
     width: 2px;
-    background: #ffffff;  /* 선 색 */
-    opacity: 0.8;         /* 투명도 */
+    background: #ffffff;    /* 선 색상 */
+    opacity: 0.8;           /* 투명도 */
     transform: translateX(-50%);
-    z-index: 9999;
-    pointer-events: none; /* 클릭 차단 */
+    z-index: 999999 !important;   /* Streamlit 모든 레이어 위 */
+    pointer-events: none;
 }
 </style>
-<div class="center-divider-fixed"></div>
-""",
-height=0)
+<div class="center-divider-real"></div>
+""", unsafe_allow_html=True)
