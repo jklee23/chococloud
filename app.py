@@ -265,32 +265,46 @@ elif view == "answerb":
     render_wordcloud(f"{SHEET_B} 워드클라우드", countsB)
 
 else:
-    # 홈(기본) — 두 워드클라우드 나란히 표시
-    st.title("🍫 ChocoCloud — 워드클라우드 대시보드")
-    st.caption("위 버튼에서 각 워드클라우드를 새 탭으로 열 수 있어요. 아래는 미리보기입니다.")
-
-    col_left, col_right = st.columns(2, gap="large")
-    with col_left:
-        st.subheader(f"{SHEET_A}")
-        countsA, colsA = get_phrase_counts(SHEET_A, TARGET_COL)
-        if DEBUG:
-            st.write("Columns(A):", list(colsA))
-            st.write("Top20(A):", countsA.most_common(20))
-        render_wordcloud(f"{SHEET_A}", countsA)
-
-    with col_right:
-        st.subheader(f"{SHEET_B}")
-        countsB, colsB = get_phrase_counts(SHEET_B, TARGET_COL)
-        if DEBUG:
-            st.write("Columns(B):", list(colsB))
-            st.write("Top20(B):", countsB.most_common(20))
-        render_wordcloud(f"{SHEET_B}", countsB)
-
-# (선택) 디버그 아닐 때 화면 간소화
-if not DEBUG:
+    # 홈(기본) — 두 워드클라우드 나란히 표시 (AFTER 오른쪽, BEFORE 왼쪽)
     st.markdown("""
-    <style>
-      .block-container { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-      header, footer { display: none !important; }
-    </style>
+    <div style="text-align:center; font-size:28px; font-weight:700; margin-bottom:0.5rem;">
+      🍫 ChocoCloud — 워드클라우드 대시보드
+    </div>
+    <p style="text-align:center; color:#bbb;">비포 / 에프터 리뷰를 한 화면에 비교해보세요.</p>
     """, unsafe_allow_html=True)
+
+    # 배경색을 통일시키고 두 워드클라우드를 하나의 영역처럼
+    container = st.container()
+    with container:
+        st.markdown("""
+        <div style="display:flex; flex-direction:row; justify-content:center; align-items:stretch;
+                    width:100%; background-color:#7F3100; padding:0; margin:0;">
+        """, unsafe_allow_html=True)
+
+        # ✅ 왼쪽 = AFTER (answerB)
+        col_left, col_right = st.columns([1, 1], gap="small")
+        with col_left:
+            st.markdown(
+                "<h2 style='text-align:center; color:white; margin-top:0;'>에프터 리뷰</h2>",
+                unsafe_allow_html=True,
+            )
+            countsB, colsB = get_phrase_counts(SHEET_B, TARGET_COL)
+            if DEBUG:
+                st.write("Columns(B):", list(colsB))
+                st.write("Top20(B):", countsB.most_common(20))
+            render_wordcloud(f"{SHEET_B}", countsB)
+
+        # ✅ 오른쪽 = BEFORE (answerA)
+        with col_right:
+            st.markdown(
+                "<h2 style='text-align:center; color:white; margin-top:0;'>비포 리뷰</h2>",
+                unsafe_allow_html=True,
+            )
+            countsA, colsA = get_phrase_counts(SHEET_A, TARGET_COL)
+            if DEBUG:
+                st.write("Columns(A):", list(colsA))
+                st.write("Top20(A):", countsA.most_common(20))
+            render_wordcloud(f"{SHEET_A}", countsA)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
