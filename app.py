@@ -187,24 +187,31 @@ with col_left:
 with col_right:
     countsA = get_phrase_counts(SHEET_A, TARGET_COL)
     render_wordcloud_only(countsA, bg="#7F3100")
+
 # ─────────────────────────────
-# 중앙 흰색 구분선 (진짜로 워드클라우드 위에 고정 표시)
+# 완전 고정 중앙선 (리렌더링해도 깜빡이지 않음)
 # ─────────────────────────────
 st.markdown("""
-<style>
-/* 워드클라우드보다 위에 오도록 전역 고정 */
-.center-divider-real {
-    position: fixed !important;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 2px;
-    background: #ffffff;    /* 선 색상 */
-    opacity: 0.8;           /* 투명도 */
-    transform: translateX(-50%);
-    z-index: 999999 !important;   /* Streamlit 모든 레이어 위 */
-    pointer-events: none;
-}
-</style>
-<div class="center-divider-real"></div>
+<script>
+(function() {
+  // 이미 선이 있으면 중복 생성 방지
+  if (document.getElementById("real-fixed-divider")) return;
+
+  const line = document.createElement("div");
+  line.id = "real-fixed-divider";
+  Object.assign(line.style, {
+    position: "fixed",
+    top: "0",
+    bottom: "0",
+    left: "50%",
+    width: "8px",
+    background: "#000000",
+    opacity: "0.9",
+    transform: "translateX(-50%)",
+    zIndex: "9999999",
+    pointerEvents: "none"
+  });
+  document.body.appendChild(line);
+})();
+</script>
 """, unsafe_allow_html=True)
