@@ -198,7 +198,7 @@ st.markdown(
         bottom: 0;
         left: 50%;               /* 정확히 중앙 */
         width: 8px;              /* 선 두께 */
-        background: #ffffff;     /* 흰색 */
+        background: #000000;     /* 흰색 */
         opacity: 0.7;            /* 투명도 */
         transform: translateX(-50%);
         z-index: 9999;           /* 맨 위로 */
