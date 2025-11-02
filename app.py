@@ -169,7 +169,7 @@ def render_wordcloud_only(counts: Counter, *, bg="#7F3100"):
         prefer_horizontal=0.95
     ).generate_from_frequencies(counts)
 
-    fig, ax = plt.subplots(figsize=(10, 14), facecolor=bg)      # ⬅️ 세로 더 길게
+    fig, ax = plt.subplots(figsize=(12, 16), facecolor=bg)      # ⬅️ 세로 더 길게
     ax.imshow(wc, interpolation="bilinear")
     ax.axis("off")
     st.pyplot(fig, use_container_width=True)
